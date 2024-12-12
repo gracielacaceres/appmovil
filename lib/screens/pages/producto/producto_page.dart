@@ -26,8 +26,9 @@ class _ProductoPageState extends State<ProductoPage> {
 
   Future<void> _loadProducts() async {
     try {
-      List<Producto> products = await ApiServiceProducto.listarProductos();
-      _productList = products;
+      List<Producto> activeProducts = await ApiServiceProducto.listarProductosActivos();
+      List<Producto> inactiveProducts = await ApiServiceProducto.listarProductosInactivos();
+      _productList = [...activeProducts, ...inactiveProducts];
       _filteredProductList = _productList;
       setState(() {});
     } catch (e) {
@@ -37,78 +38,125 @@ class _ProductoPageState extends State<ProductoPage> {
     }
   }
 
+  void _filterProducts() {
+    String query = _searchController.text.toLowerCase();
+    setState(() {
+      _filteredProductList = _productList.where((product) {
+        String priceString = product.precio.toString();
+        String stockString = product.stock.toString();
+        return product.nombre.toLowerCase().contains(query) ||
+            priceString.contains(query) ||
+            product.unidadMedida.toLowerCase().contains(query) ||
+            stockString.contains(query) ||
+            product.categoria.nombre.toLowerCase().contains(query);
+      }).toList();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Column(
-          children: [
-            const SizedBox(height: 16.0),
-            TextField(
-              controller: _searchController,
-              decoration: InputDecoration(
-                filled: true,
-                fillColor: Colors.white,
-                hintText: 'Buscar productos',
-                prefixIcon: const Icon(Icons.search),
-                suffixIcon: IconButton(
-                  icon: const Icon(
-                    Icons.person_add,
-                    color: Colors.black,
-                    size: 28,
+    return DefaultTabController(
+      length: 2,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Column(
+            children: [
+              const SizedBox(height: 16.0),
+              TextField(
+                controller: _searchController,
+                decoration: InputDecoration(
+                  filled: true,
+                  fillColor: Colors.white,
+                  hintText: 'Buscar productos',
+                  prefixIcon: const Icon(Icons.search),
+                  suffixIcon: IconButton(
+                    icon: const Icon(
+                      Icons.person_add,
+                      color: Colors.black,
+                      size: 28,
+                    ),
+                    onPressed: () {
+                      _navigateToProductDetail(Producto(
+                        idProducto: 0,
+                        imagen: '',
+                        nombre: '',
+                        descripcion: '',
+                        precio: 0.0,
+                        stock: 0.0,
+                        unidadMedida: '',
+                        fechaIngreso: DateTime.now(),
+                        categoria: Categoria(idCategoria: 0, nombre: ''),
+                      ));
+                    },
                   ),
-                  onPressed: () {
-                    _navigateToProductDetail(Producto(
-                      idProducto: 0,
-                      imagen: '',
-                      nombre: '',
-                      descripcion: '',
-                      precio: 0.0,
-                      stock: 0.0,
-                      unidadMedida: '',
-                      fechaIngreso: DateTime.now(),
-                      categoria: Categoria(idCategoria: 0, nombre: ''),
-                    ));
-                  },
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                    borderSide: BorderSide.none,
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(
+                    vertical: 12.0,
+                    horizontal: 16.0,
+                  ),
                 ),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8.0),
-                  borderSide: BorderSide.none,
+              ),
+            ],
+          ),
+          bottom: const TabBar(
+            indicatorColor: Colors.blue,
+            tabs: [
+              Tab(
+                child: Text(
+                  'Activos',
+                  style: TextStyle(color: Colors.black),
                 ),
-                contentPadding: const EdgeInsets.symmetric(
-                  vertical: 12.0,
-                  horizontal: 16.0,
+              ),
+              Tab(
+                child: Text(
+                  'Inactivos',
+                  style: TextStyle(color: Colors.black),
                 ),
+              ),
+            ],
+          ),
+        ),
+        body: Column(
+          children: [
+            Expanded(
+              child: TabBarView(
+                children: [
+                  _buildProductList(true),
+                  _buildProductList(false),
+                ],
               ),
             ),
           ],
         ),
       ),
-      body: _buildProductList(),
     );
   }
 
-  Widget _buildProductList() {
-    return Column(
-      children: [
-        Expanded(
-          child: _filteredProductList.isEmpty
-              ? const Center(
-                  child: Text('No hay productos disponibles'),
-                )
-              : ListView.separated(
-                  padding: const EdgeInsets.all(16.0),
-                  itemCount: _filteredProductList.length,
-                  itemBuilder: (context, index) {
-                    Producto product = _filteredProductList[index];
-                    bool isActive = product.estado == 1;
-                    return _buildProductListItem(product, isActive);
-                  },
-                  separatorBuilder: (context, index) =>
-                      const SizedBox(height: 16.0),
-                ),
-        ),
-      ],
+  Widget _buildProductList(bool showActive) {
+    List<Producto> filteredProducts = _filteredProductList
+        .where((product) => product.estado == (showActive ? 1 : 0))
+        .toList();
+
+    if (filteredProducts.isEmpty) {
+      return Center(
+        child: Text(showActive
+            ? 'No hay productos activos'
+            : 'No hay productos inactivos'),
+      );
+    }
+
+    return ListView.separated(
+      padding: const EdgeInsets.all(16.0),
+      itemCount: filteredProducts.length,
+      itemBuilder: (context, index) {
+        Producto product = filteredProducts[index];
+        bool isActive = product.estado == 1;
+        return _buildProductListItem(product, isActive);
+      },
+      separatorBuilder: (context, index) => const SizedBox(height: 16.0),
     );
   }
 
@@ -278,21 +326,6 @@ class _ProductoPageState extends State<ProductoPage> {
         ),
       ),
     );
-  }
-
-  void _filterProducts() {
-    String query = _searchController.text.toLowerCase();
-    setState(() {
-      _filteredProductList = _productList.where((product) {
-        String priceString = product.precio.toString();
-        String stockString = product.stock.toString();
-        return product.nombre.toLowerCase().contains(query) ||
-            priceString.contains(query) ||
-            product.unidadMedida.toLowerCase().contains(query) ||
-            stockString.contains(query) ||
-            product.categoria.nombre.toLowerCase().contains(query);
-      }).toList();
-    });
   }
 
   @override

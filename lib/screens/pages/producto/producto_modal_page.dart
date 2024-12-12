@@ -8,7 +8,6 @@ import 'package:myapp/screens/pages/producto/categoria_selection_screen.dart';
 import 'package:myapp/services/categoria_service.dart';
 import 'package:myapp/services/producto_service.dart';
 
-
 class ProductoModalPage extends StatefulWidget {
   final Producto producto;
   final Function(Producto, bool) onProductoSaved;
@@ -35,6 +34,9 @@ class _ProductoModalPageState extends State<ProductoModalPage> {
   bool _isNewProducto = false;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
+  final List<String> _unidadMedidaOptions = ['litros', 'gramos', 'unidades'];
+  late String _selectedUnidadMedida;
+
   @override
   void initState() {
     super.initState();
@@ -47,6 +49,7 @@ class _ProductoModalPageState extends State<ProductoModalPage> {
       text: widget.producto.fechaExpiracion != null ? _formatDate(widget.producto.fechaExpiracion!) : '',
     );
     _isNewProducto = widget.producto.idProducto == 0;
+    _selectedUnidadMedida = widget.producto.unidadMedida.isNotEmpty ? widget.producto.unidadMedida : _unidadMedidaOptions.first;
 
     if (_isNewProducto) {
       _loadCategorias();
@@ -128,7 +131,7 @@ class _ProductoModalPageState extends State<ProductoModalPage> {
         descripcion: _descripcionController.text,
         precio: double.tryParse(_precioController.text) ?? 0.0,
         stock: double.tryParse(_stockController.text) ?? 0.0,
-        unidadMedida: widget.producto.unidadMedida,
+        unidadMedida: _selectedUnidadMedida,
         fechaIngreso: widget.producto.fechaIngreso,
         fechaExpiracion: selectedDate,
         estado: widget.producto.estado,
@@ -310,6 +313,25 @@ class _ProductoModalPageState extends State<ProductoModalPage> {
                   ),
                   keyboardType: TextInputType.number,
                   validator: _validateStock,
+                ),
+                const SizedBox(height: 16),
+                DropdownButtonFormField<String>(
+                  value: _selectedUnidadMedida,
+                  decoration: const InputDecoration(
+                    labelText: 'Unidad de Medida',
+                    prefixIcon: Icon(Icons.straighten),
+                  ),
+                  items: _unidadMedidaOptions.map((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
+                    );
+                  }).toList(),
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      _selectedUnidadMedida = newValue!;
+                    });
+                  },
                 ),
                 const SizedBox(height: 16),
                 TextFormField(

@@ -16,6 +16,26 @@ class ApiServiceProducto {
     }
   }
 
+  static Future<List<Producto>> listarProductosActivos() async {
+    final response = await http.get(Uri.parse('$baseUrl/estado/activo'));
+    if (response.statusCode == 200) {
+      Iterable data = json.decode(utf8.decode(response.bodyBytes));
+      return List<Producto>.from(data.map((model) => Producto.fromJson(model)));
+    } else {
+      throw Exception('Failed to load active productos');
+    }
+  }
+
+  static Future<List<Producto>> listarProductosInactivos() async {
+    final response = await http.get(Uri.parse('$baseUrl/estado/inactivo'));
+    if (response.statusCode == 200) {
+      Iterable data = json.decode(utf8.decode(response.bodyBytes));
+      return List<Producto>.from(data.map((model) => Producto.fromJson(model)));
+    } else {
+      throw Exception('Failed to load inactive productos');
+    }
+  }
+
   static Future<void> agregarProducto(Producto producto) async {
     final response = await http.post(
       Uri.parse(baseUrl),
