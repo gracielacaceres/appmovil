@@ -21,7 +21,6 @@ class CategoriaModalPage extends StatefulWidget {
 
 class _CategoriaModalPageState extends State<CategoriaModalPage> {
   late TextEditingController _nombreController;
-  late TextEditingController _estadoController;
   bool _isNewCategoria = false;
 
   bool _nombreExists = false; // Variable para verificar si el nombre ya existe
@@ -31,13 +30,10 @@ class _CategoriaModalPageState extends State<CategoriaModalPage> {
   void initState() {
     super.initState();
     _nombreController = TextEditingController(text: widget.categoria.nombre);
-    _estadoController = TextEditingController(text: widget.categoria.estado);
-
     _isNewCategoria = widget.categoria.idCategoria == 0;
 
     // Verificar si el nombre inicial ya existe al inicio
-    _checkNombreExists(_nombreController
-        .text); // Llama al método _checkNombreExists con el nombre inicial
+    _checkNombreExists(_nombreController.text); // Llama al método _checkNombreExists con el nombre inicial
   }
 
   void _saveChanges() async {
@@ -48,7 +44,7 @@ class _CategoriaModalPageState extends State<CategoriaModalPage> {
     final categoria = Categoria(
       idCategoria: widget.categoria.idCategoria,
       nombre: _nombreController.text,
-      estado: _estadoController.text,
+      estado: "A", // Estado por defecto
     );
 
     try {
@@ -89,17 +85,9 @@ class _CategoriaModalPageState extends State<CategoriaModalPage> {
     return null;
   }
 
-  String? _validateEstado(String? value) {
-    if (value == null || value.isEmpty) {
-      return 'Por favor ingresa el estado';
-    }
-    return null;
-  }
-
   void _checkNombreExists(String value) async {
     if (value.isNotEmpty) {
-      bool nombreExists =
-          await ApiServiceCategoria.checkExistingCategoria(value);
+      bool nombreExists = await ApiServiceCategoria.checkExistingCategoria(value);
       setState(() {
         _nombreExists = nombreExists;
       });
@@ -109,7 +97,6 @@ class _CategoriaModalPageState extends State<CategoriaModalPage> {
   @override
   void dispose() {
     _nombreController.dispose();
-    _estadoController.dispose();
     super.dispose();
   }
 
@@ -148,27 +135,13 @@ class _CategoriaModalPageState extends State<CategoriaModalPage> {
                     });
                     // Verificar si el documento existe al cambiar el valor
                     if (value.isNotEmpty) {
-                      bool nombreExists =
-                          await ApiServiceCategoria.checkExistingCategoria(
-                              value);
+                      bool nombreExists = await ApiServiceCategoria.checkExistingCategoria(value);
                       setState(() {
                         _nombreExists = nombreExists;
                       });
                     }
                   },
-                  validator:
-                      _validateNombre, // Valida el nombre según _nombreExists
-                ),
-                const SizedBox(height: 16),
-                TextFormField(
-                  controller: _estadoController,
-                  decoration: const InputDecoration(
-                    labelText: 'Estado',
-                    prefixIcon: Icon(Icons.description),
-                  ),
-                  maxLines: null, // Permite escribir varias líneas
-                  keyboardType: TextInputType.multiline,
-                  validator: _validateEstado,
+                  validator: _validateNombre, // Valida el nombre según _nombreExists
                 ),
                 const SizedBox(height: 20),
                 Center(
@@ -182,9 +155,7 @@ class _CategoriaModalPageState extends State<CategoriaModalPage> {
                         padding: const EdgeInsets.symmetric(vertical: 16),
                       ),
                       child: Text(
-                        _isNewCategoria
-                            ? 'Guardar Categoría'
-                            : 'Guardar Cambios',
+                        _isNewCategoria ? 'Guardar Categoría' : 'Guardar Cambios',
                         style: const TextStyle(fontSize: 20),
                       ),
                     ),
