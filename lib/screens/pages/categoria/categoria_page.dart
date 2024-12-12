@@ -27,8 +27,8 @@ class _CategoriasPageState extends State<CategoriasPage> {
 
   Future<void> _loadCategorias() async {
     try {
-      List<Categoria> activeCategorias = await ApiServiceCategoria.listarCategoriasPorEstado("A");
-      List<Categoria> inactiveCategorias = await ApiServiceCategoria.listarCategoriasPorEstado("I");
+      List<Categoria> activeCategorias = await ApiServiceCategoria.listarCategoriasPorEstadoActivo();
+      List<Categoria> inactiveCategorias = await ApiServiceCategoria.listarCategoriasPorEstadoInactivo();
       _categoriaList = [...activeCategorias, ...inactiveCategorias];
       _filteredCategoriaList = _categoriaList;
       setState(() {});

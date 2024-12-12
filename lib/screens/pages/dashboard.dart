@@ -44,7 +44,7 @@ class _DashboardPageState extends State<DashboardPage> {
   Future<void> _getActiveCategorias() async {
     try {
       List<categoria_model.Categoria> activeCategorias =
-          await ApiServiceCategoria.listarCategorias();
+          await ApiServiceCategoria.listarCategoriasPorEstadoActivo();
       setState(() {
         activeCategoriasCount = activeCategorias.length;
       });

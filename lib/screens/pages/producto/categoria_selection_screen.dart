@@ -26,7 +26,7 @@ class _CategoriaSelectionScreenState extends State<CategoriaSelectionScreen> {
 
   Future<void> _loadCategorias() async {
     try {
-      final categorias = await ApiServiceCategoria.listarCategoriasPorEstado("A");
+      final categorias = await ApiServiceCategoria.listarCategoriasPorEstadoActivo();
       setState(() {
         _categorias = categorias;
         _filteredCategorias = categorias;

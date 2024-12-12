@@ -26,6 +26,26 @@ class ApiServiceCategoria {
     }
   }
 
+  static Future<List<Categoria>> listarCategoriasPorEstadoActivo() async {
+    final response = await http.get(Uri.parse('$baseUrl/estado/activo'));
+    if (response.statusCode == 200) {
+      Iterable data = json.decode(utf8.decode(response.bodyBytes));
+      return List<Categoria>.from(data.map((model) => Categoria.fromJson(model)));
+    } else {
+      throw Exception('Failed to load active categories');
+    }
+  }
+
+  static Future<List<Categoria>> listarCategoriasPorEstadoInactivo() async {
+    final response = await http.get(Uri.parse('$baseUrl/estado/inactivo'));
+    if (response.statusCode == 200) {
+      Iterable data = json.decode(utf8.decode(response.bodyBytes));
+      return List<Categoria>.from(data.map((model) => Categoria.fromJson(model)));
+    } else {
+      throw Exception('Failed to load inactive categories');
+    }
+  }
+
   static Future<void> agregarCategoria(Categoria categoria) async {
     final response = await http.post(
       Uri.parse(baseUrl),
@@ -34,7 +54,7 @@ class ApiServiceCategoria {
       },
       body: jsonEncode(categoria.toJson()),
     );
-    if (response.statusCode != 200) {
+    if (response.statusCode != 201) {
       throw Exception('Failed to add category: ${response.statusCode} - ${response.body}');
     }
   }
@@ -63,7 +83,7 @@ class ApiServiceCategoria {
 
   static Future<void> eliminarCategoria(int id) async {
     final response = await http.put(Uri.parse('$baseUrl/eliminar/$id'));
-    if (response.statusCode != 200) {
+    if (response.statusCode != 204) {
       throw Exception('Failed to delete category');
     }
   }

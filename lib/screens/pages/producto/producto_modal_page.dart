@@ -8,7 +8,6 @@ import 'package:myapp/screens/pages/producto/categoria_selection_screen.dart';
 import 'package:myapp/services/categoria_service.dart';
 import 'package:myapp/services/producto_service.dart';
 
-
 class ProductoModalPage extends StatefulWidget {
   final Producto producto;
   final Function(Producto, bool) onProductoSaved;
@@ -77,7 +76,7 @@ class _ProductoModalPageState extends State<ProductoModalPage> {
 
   Future<void> _loadCategoriasAndSelectCategoria() async {
     try {
-      final categorias = await ApiServiceCategoria.listarCategoriasPorEstado("A");
+      final categorias = await ApiServiceCategoria.listarCategoriasPorEstadoActivo();
       final selectedCategoria = categorias.firstWhere(
         (categoria) => categoria.idCategoria == widget.producto.categoria.idCategoria,
         orElse: () => categoria_model.Categoria(idCategoria: 0, nombre: '', estado:("A")),
@@ -96,7 +95,7 @@ class _ProductoModalPageState extends State<ProductoModalPage> {
 
   Future<void> _loadCategorias() async {
     try {
-      final categorias = await ApiServiceCategoria.listarCategoriasPorEstado("A");
+      final categorias = await ApiServiceCategoria.listarCategoriasPorEstadoActivo();
       setState(() {
         if (categorias.isNotEmpty) {
           _selectedCategoria = categorias.first;
