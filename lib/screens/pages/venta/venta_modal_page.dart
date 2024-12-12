@@ -29,7 +29,8 @@ class _VentaModalPageState extends State<VentaModalPage> {
   @override
   void initState() {
     super.initState();
-    _usuarioController = TextEditingController(text: widget.venta.usuario.nombre);
+    _usuarioController =
+        TextEditingController(text: widget.venta.usuario.nombre);
     _detallesVenta.addAll(widget.venta.detalles);
   }
 
@@ -71,20 +72,20 @@ class _VentaModalPageState extends State<VentaModalPage> {
   }
 
   void _seleccionarUsuario() async {
-  final usuarioSeleccionado = await Navigator.push<Usuario?>(
-    context,
-    MaterialPageRoute(
-      builder: (context) => const UsuarioSelectionScreen(),
-    ),
-  );
+    final usuarioSeleccionado = await Navigator.push<Usuario?>(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const UsuarioSelectionScreen(),
+      ),
+    );
 
-  if (usuarioSeleccionado != null) {
-    setState(() {
-      widget.venta.usuario = usuarioSeleccionado;
-      _usuarioController.text = usuarioSeleccionado.nombre ?? '';
-    });
+    if (usuarioSeleccionado != null) {
+      setState(() {
+        widget.venta.usuario = usuarioSeleccionado;
+        _usuarioController.text = usuarioSeleccionado.nombre ?? '';
+      });
+    }
   }
-}
 
   void _agregarProducto() async {
     final productoSeleccionado = await Navigator.push(
@@ -115,7 +116,8 @@ class _VentaModalPageState extends State<VentaModalPage> {
 
     if (detalleExistente != null) {
       cantidad = detalleExistente.cantidad;
-      cantidadController.text = cantidad.toStringAsFixed(permitirDecimales ? 2 : 0);
+      cantidadController.text =
+          cantidad.toStringAsFixed(permitirDecimales ? 2 : 0);
     }
 
     showModalBottomSheet(
@@ -158,8 +160,10 @@ class _VentaModalPageState extends State<VentaModalPage> {
                             } else {
                               cantidad--;
                             }
-                            cantidad = _redondearDecimales(cantidad, permitirDecimales ? 2 : 0);
-                            cantidadController.text = cantidad.toStringAsFixed(permitirDecimales ? 2 : 0);
+                            cantidad = _redondearDecimales(
+                                cantidad, permitirDecimales ? 2 : 0);
+                            cantidadController.text = cantidad
+                                .toStringAsFixed(permitirDecimales ? 2 : 0);
                           }
                         });
                       },
@@ -172,7 +176,8 @@ class _VentaModalPageState extends State<VentaModalPage> {
                             title: const Text('Ingrese la cantidad'),
                             content: TextField(
                               controller: cantidadController,
-                              keyboardType: TextInputType.numberWithOptions(decimal: permitirDecimales),
+                              keyboardType: TextInputType.numberWithOptions(
+                                  decimal: permitirDecimales),
                               decoration: const InputDecoration(
                                 hintText: 'Cantidad',
                               ),
@@ -180,7 +185,8 @@ class _VentaModalPageState extends State<VentaModalPage> {
                                 if (value.isNotEmpty) {
                                   setState(() {
                                     cantidad = double.parse(value);
-                                    cantidad = _redondearDecimales(cantidad, permitirDecimales ? 2 : 0);
+                                    cantidad = _redondearDecimales(
+                                        cantidad, permitirDecimales ? 2 : 0);
                                   });
                                 }
                               },
@@ -213,8 +219,10 @@ class _VentaModalPageState extends State<VentaModalPage> {
                           } else {
                             cantidad++;
                           }
-                          cantidad = _redondearDecimales(cantidad, permitirDecimales ? 2 : 0);
-                          cantidadController.text = cantidad.toStringAsFixed(permitirDecimales ? 2 : 0);
+                          cantidad = _redondearDecimales(
+                              cantidad, permitirDecimales ? 2 : 0);
+                          cantidadController.text = cantidad
+                              .toStringAsFixed(permitirDecimales ? 2 : 0);
                         });
                       },
                     ),
@@ -256,7 +264,9 @@ class _VentaModalPageState extends State<VentaModalPage> {
                         foregroundColor: Colors.white,
                       ),
                       child: Text(
-                        detalleExistente != null ? 'Actualizar cantidad' : 'Agregar a la venta',
+                        detalleExistente != null
+                            ? 'Actualizar cantidad'
+                            : 'Agregar a la venta',
                       ),
                     ),
                     ElevatedButton(
@@ -346,7 +356,7 @@ class _VentaModalPageState extends State<VentaModalPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: const Color.fromARGB(255, 21, 0, 156),
+        backgroundColor: const Color.fromARGB(255, 49, 149, 243),
         iconTheme: const IconThemeData(color: Colors.white),
         title: Text(
           widget.venta.idVenta == null ? 'Nueva Venta' : 'Editar Venta',
@@ -389,8 +399,9 @@ class _VentaModalPageState extends State<VentaModalPage> {
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: _guardarVenta,
-              child: Text(
-                  widget.venta.idVenta == null ? 'Guardar Venta' : 'Guardar Cambios'),
+              child: Text(widget.venta.idVenta == null
+                  ? 'Guardar Venta'
+                  : 'Guardar Cambios'),
             ),
           ],
         ),

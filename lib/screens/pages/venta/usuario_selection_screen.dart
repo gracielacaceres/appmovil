@@ -51,7 +51,7 @@ class _UsuarioSelectionScreenState extends State<UsuarioSelectionScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: const Color.fromARGB(255, 21, 0, 156),
+        backgroundColor: const Color.fromARGB(255, 26, 172, 221),
         iconTheme: const IconThemeData(color: Colors.white),
         title: const Text('Lista de Usuarios',
             style: TextStyle(color: Colors.white)),
