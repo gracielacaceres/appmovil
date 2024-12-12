@@ -27,7 +27,11 @@ class _ProductoModalPageState extends State<ProductoModalPage> {
   late TextEditingController _descripcionController;
   late TextEditingController _precioController;
   late TextEditingController _stockController;
+  late TextEditingController _unidadMedidaController;
+  late TextEditingController _fechaIngresoController;
   late TextEditingController _fechaExpiracionController;
+  late TextEditingController _estadoController;
+  late TextEditingController _imagenController;
   late DateTime _selectedDate;
   late categoria_model.Categoria _selectedCategoria = categoria_model.Categoria(idCategoria: 0, nombre: '', estado:("A"));
   bool _nombreExists = false;
@@ -41,10 +45,14 @@ class _ProductoModalPageState extends State<ProductoModalPage> {
     _descripcionController = TextEditingController(text: widget.producto.descripcion);
     _precioController = TextEditingController(text: widget.producto.precio > 0 ? widget.producto.precio.toString() : '');
     _stockController = TextEditingController(text: widget.producto.stock > 0 ? widget.producto.stock.toString() : '');
+    _unidadMedidaController = TextEditingController(text: widget.producto.unidadMedida);
+    _fechaIngresoController = TextEditingController(text: _formatDate(widget.producto.fechaIngreso));
     _selectedDate = widget.producto.fechaExpiracion ?? DateTime.now();
     _fechaExpiracionController = TextEditingController(
       text: widget.producto.fechaExpiracion != null ? _formatDate(widget.producto.fechaExpiracion!) : '',
     );
+    _estadoController = TextEditingController(text: widget.producto.estado.toString());
+    _imagenController = TextEditingController(text: widget.producto.imagen);
     _isNewProducto = widget.producto.idProducto == 0;
 
     if (_isNewProducto) {
@@ -122,15 +130,15 @@ class _ProductoModalPageState extends State<ProductoModalPage> {
     try {
       final producto = Producto(
         idProducto: widget.producto.idProducto,
-        imagen: widget.producto.imagen,
+        imagen: _imagenController.text,
         nombre: _nombreController.text,
         descripcion: _descripcionController.text,
         precio: double.tryParse(_precioController.text) ?? 0.0,
         stock: double.tryParse(_stockController.text) ?? 0.0,
-        unidadMedida: widget.producto.unidadMedida,
-        fechaIngreso: widget.producto.fechaIngreso,
+        unidadMedida: _unidadMedidaController.text,
+        fechaIngreso: DateFormat('dd-MMM-yyyy').parse(_fechaIngresoController.text),
         fechaExpiracion: selectedDate,
-        estado: widget.producto.estado,
+        estado: int.tryParse(_estadoController.text) ?? 1,
         categoria: Categoria(
           idCategoria: _selectedCategoria.idCategoria,
           nombre: _selectedCategoria.nombre,
@@ -194,8 +202,26 @@ class _ProductoModalPageState extends State<ProductoModalPage> {
       return 'Por favor ingresa el stock';
     }
     final stock = double.tryParse(value);
-    if (stock == null || stock <= 0) {
-      return 'Ingresa un stock válido (mayor que cero)';
+    if (stock == null || stock < 0) {
+      return 'Ingresa un stock válido (mayor o igual a cero)';
+    }
+    return null;
+  }
+
+  String? _validateUnidadMedida(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Por favor ingresa la unidad de medida';
+    }
+    final validUnits = ['litros', 'gramos', 'unidades', 'kilo'];
+    if (!validUnits.contains(value.toLowerCase())) {
+      return 'Unidad de medida inválida';
+    }
+    return null;
+  }
+
+  String? _validateFechaIngreso(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Por favor ingresa la fecha de ingreso';
     }
     return null;
   }
@@ -214,13 +240,35 @@ class _ProductoModalPageState extends State<ProductoModalPage> {
     return null;
   }
 
+  String? _validateEstado(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Por favor ingresa el estado';
+    }
+    final estado = int.tryParse(value);
+    if (estado == null || (estado != 0 && estado != 1)) {
+      return 'Estado inválido';
+    }
+    return null;
+  }
+
+  String? _validateImagen(String? value) {
+    if (value == null || value.isEmpty) {
+      return 'Por favor ingresa la URL de la imagen';
+    }
+    return null;
+  }
+
   @override
   void dispose() {
     _nombreController.dispose();
     _descripcionController.dispose();
     _precioController.dispose();
     _stockController.dispose();
+    _unidadMedidaController.dispose();
+    _fechaIngresoController.dispose();
     _fechaExpiracionController.dispose();
+    _estadoController.dispose();
+    _imagenController.dispose();
     super.dispose();
   }
 
@@ -312,6 +360,29 @@ class _ProductoModalPageState extends State<ProductoModalPage> {
                 ),
                 const SizedBox(height: 16),
                 TextFormField(
+                  controller: _unidadMedidaController,
+                  decoration: const InputDecoration(
+                    labelText: 'Unidad de Medida',
+                    prefixIcon: Icon(Icons.straighten),
+                  ),
+                  textInputAction: TextInputAction.next,
+                  validator: _validateUnidadMedida,
+                ),
+                const SizedBox(height: 16),
+                TextFormField(
+                  controller: _fechaIngresoController,
+                  decoration: const InputDecoration(
+                    labelText: 'Fecha de Ingreso',
+                    prefixIcon: Icon(Icons.calendar_today),
+                  ),
+                  readOnly: true,
+                  onTap: () {
+                    _selectDate(context);
+                  },
+                  validator: _validateFechaIngreso,
+                ),
+                const SizedBox(height: 16),
+                TextFormField(
                   controller: _fechaExpiracionController,
                   decoration: const InputDecoration(
                     labelText: 'Fecha de Expiración',
@@ -323,6 +394,26 @@ class _ProductoModalPageState extends State<ProductoModalPage> {
                     _selectDate(context);
                   },
                   validator: _validateFechaExpiracion,
+                ),
+                const SizedBox(height: 16),
+                TextFormField(
+                  controller: _estadoController,
+                  decoration: const InputDecoration(
+                    labelText: 'Estado',
+                    prefixIcon: Icon(Icons.toggle_on),
+                  ),
+                  keyboardType: TextInputType.number,
+                  validator: _validateEstado,
+                ),
+                const SizedBox(height: 16),
+                TextFormField(
+                  controller: _imagenController,
+                  decoration: const InputDecoration(
+                    labelText: 'Imagen',
+                    prefixIcon: Icon(Icons.image),
+                  ),
+                  textInputAction: TextInputAction.next,
+                  validator: _validateImagen,
                 ),
                 const SizedBox(height: 20),
                 Center(
