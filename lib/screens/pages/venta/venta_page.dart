@@ -287,7 +287,7 @@ class _VentaPageState extends State<VentaPage> {
       MaterialPageRoute(
         builder: (context) => VentaModalPage(
           venta: venta,
-          onVentaSaved: _manejarVentaGuardada,
+          onVentaSaved: _manejarVentaGuardada, onVentaGuardada: (Venta venta, bool esVentaNueva) {  },
         ),
       ),
     );

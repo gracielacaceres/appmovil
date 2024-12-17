@@ -15,7 +15,7 @@ class VentaModalPage extends StatefulWidget {
   const VentaModalPage({
     super.key,
     required this.venta,
-    required this.onVentaSaved,
+    required this.onVentaSaved, required void Function(Venta venta, bool esVentaNueva) onVentaGuardada,
   });
 
   @override
