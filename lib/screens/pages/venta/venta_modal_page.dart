@@ -13,10 +13,10 @@ class VentaModalPage extends StatefulWidget {
   final Function(Venta, bool) onVentaSaved;
 
   const VentaModalPage({
-    Key? key,
+    super.key,
     required this.venta,
     required this.onVentaSaved,
-  }) : super(key: key);
+  });
 
   @override
   _VentaModalPageState createState() => _VentaModalPageState();
@@ -24,7 +24,7 @@ class VentaModalPage extends StatefulWidget {
 
 class _VentaModalPageState extends State<VentaModalPage> {
   late TextEditingController _usuarioController;
-  List<DetalleVenta> _detallesVenta = [];
+  final List<DetalleVenta> _detallesVenta = [];
 
   @override
   void initState() {

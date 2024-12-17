@@ -26,8 +26,10 @@ class _ProductoPageState extends State<ProductoPage> {
 
   Future<void> _loadProducts() async {
     try {
-      List<Producto> activeProducts = await ApiServiceProducto.listarProductosActivos();
-      List<Producto> inactiveProducts = await ApiServiceProducto.listarProductosInactivos();
+      List<Producto> activeProducts =
+          await ApiServiceProducto.listarProductosActivos();
+      List<Producto> inactiveProducts =
+          await ApiServiceProducto.listarProductosInactivos();
       _productList = [...activeProducts, ...inactiveProducts];
       _filteredProductList = _productList;
       setState(() {});
@@ -196,8 +198,11 @@ class _ProductoPageState extends State<ProductoPage> {
             style: const TextStyle(color: Colors.white),
           ),
         ),
-        trailing: isActive
-            ? IconButton(
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (isActive)
+              IconButton(
                 icon: const Icon(
                   Icons.delete,
                   color: Color.fromARGB(255, 248, 0, 0),
@@ -206,8 +211,9 @@ class _ProductoPageState extends State<ProductoPage> {
                 onPressed: () {
                   _showConfirmationDialog(context, product);
                 },
-              )
-            : IconButton(
+              ),
+            if (!isActive)
+              IconButton(
                 icon: const Icon(
                   Icons.restore,
                   color: Color.fromARGB(255, 0, 104, 248),
@@ -217,15 +223,29 @@ class _ProductoPageState extends State<ProductoPage> {
                   _showConfirmationDialog(context, product);
                 },
               ),
+            // Agregamos el ícono de editar
+            IconButton(
+              icon: const Icon(
+                Icons.edit,
+                color: Colors.blue,
+                size: 20,
+              ),
+              onPressed: () {
+                _navigateToProductDetail(product,
+                    isEdit: true); // Llamada a la función para editar
+              },
+            ),
+          ],
+        ),
         onTap: () {
           if (isActive) {
-            _navigateToProductDetail(product);
+            _navigateToProductDetail(product,
+                isEdit: true); // Llamada a la función para editar
           } else {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
                 content: Text(
-                  'No se puede abrir el formulario para productos inactivos.',
-                ),
+                    'No se puede abrir el formulario para productos inactivos.'),
               ),
             );
           }
@@ -316,12 +336,13 @@ class _ProductoPageState extends State<ProductoPage> {
     );
   }
 
-  void _navigateToProductDetail(Producto product) {
+  void _navigateToProductDetail(Producto product, {bool isEdit = false}) {
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => ProductoModalPage(
           producto: product,
+          isEdit: isEdit, // Añadimos el flag para editar
           onProductoSaved: _handleProductSaved,
         ),
       ),

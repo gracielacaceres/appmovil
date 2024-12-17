@@ -17,7 +17,7 @@ import 'package:myapp/services/producto_service.dart';
 import 'package:myapp/services/venta_service.dart';
 
 class DashboardPage extends StatefulWidget {
-  const DashboardPage({Key? key}) : super(key: key);
+  const DashboardPage({super.key});
 
   @override
   _DashboardPageState createState() => _DashboardPageState();
@@ -130,9 +130,9 @@ class _DashboardPageState extends State<DashboardPage> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 _buildStatCard('Usuarios', activeUsuariosCount, Icons.people,
-                    Colors.blue, UsuariosPage()),
+                    Colors.blue, const UsuariosPage()),
                 _buildStatCard('Categorías', activeCategoriasCount,
-                    Icons.category, Colors.teal, CategoriasPage()),
+                    Icons.category, Colors.teal, const CategoriasPage()),
               ],
             ),
             const SizedBox(height: 20),
@@ -140,7 +140,7 @@ class _DashboardPageState extends State<DashboardPage> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 _buildStatCard('Productos', activeProductosCount,
-                    Icons.shopping_basket, Colors.green, ProductoPage()),
+                    Icons.shopping_basket, Colors.green, const ProductoPage()),
               ],
             ),
             const SizedBox(height: 20),
@@ -148,7 +148,7 @@ class _DashboardPageState extends State<DashboardPage> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 _buildStatCard('Ventas', activeVentasCount, Icons.attach_money,
-                    Colors.deepPurple, VentaPage()),
+                    Colors.deepPurple, const VentaPage()),
               ],
             ),
           ],

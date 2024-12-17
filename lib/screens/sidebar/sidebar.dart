@@ -9,7 +9,7 @@ import 'package:myapp/screens/sidebar/my_drawer_header.dart';
 class HomePage extends StatefulWidget {
   final String userRole;
 
-  const HomePage({Key? key, required this.userRole}) : super(key: key);
+  const HomePage({super.key, required this.userRole});
 
   @override
   _HomePageState createState() => _HomePageState();

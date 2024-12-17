@@ -15,7 +15,7 @@ class ProductoModalPage extends StatefulWidget {
   const ProductoModalPage({
     super.key,
     required this.producto,
-    required this.onProductoSaved,
+    required this.onProductoSaved, required bool isEdit,
   });
 
   @override
@@ -206,7 +206,7 @@ class _ProductoModalPageState extends State<ProductoModalPage> {
 
   String? _validateFechaExpiracion(String? value) {
     if (value != null && value.isNotEmpty) {
-      final DateTime? fechaExpiracion = DateFormat('dd-MMM-yyyy').parse(value);
+      final DateTime fechaExpiracion = DateFormat('dd-MMM-yyyy').parse(value);
       if (fechaExpiracion == null) {
         return 'Fecha de expiración inválida';
       }
